@@ -1,0 +1,13 @@
+{
+  "name": "fluxboard",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Collaborative real-time workflow builder (portfolio project)",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=20"
+  }
+}
