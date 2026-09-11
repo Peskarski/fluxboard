@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: fluxboard
+      POSTGRES_PASSWORD: fluxboard
+      POSTGRES_DB: fluxboard
+    ports:
+      - '5432:5432'
+    volumes:
+      - fluxboard_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  fluxboard_postgres_data:
