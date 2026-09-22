@@ -1,5 +1,6 @@
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Box, TextField, Button, Typography, Alert, Link } from '@mui/material';
 import type { AuthCredentials } from '@fluxboard/shared';
 import { useLogin } from '../features/auth/useAuth';
 
@@ -13,25 +14,35 @@ export function LoginPage() {
   });
 
   return (
-    <form onSubmit={onSubmit}>
-      <h1>Log in</h1>
-      <label>
-        Email
-        <input type="email" {...register('email', { required: 'Email is required' })} />
-      </label>
-      {errors.email && <p role="alert">{errors.email.message}</p>}
-      <label>
-        Password
-        <input type="password" {...register('password', { required: 'Password is required' })} />
-      </label>
-      {errors.password && <p role="alert">{errors.password.message}</p>}
-      {login.isError && <p role="alert">{login.error.message}</p>}
-      <button type="submit" disabled={login.isPending}>
+    <Box
+      component="form"
+      onSubmit={onSubmit}
+      sx={{ display: 'flex', flexDirection: 'column', gap: 2, maxWidth: 360, mx: 'auto', mt: 8 }}
+    >
+      <Typography variant="h4" component="h1">
+        Log in
+      </Typography>
+      <TextField
+        label="Email"
+        type="email"
+        error={!!errors.email}
+        helperText={errors.email?.message}
+        {...register('email', { required: 'Email is required' })}
+      />
+      <TextField
+        label="Password"
+        type="password"
+        error={!!errors.password}
+        helperText={errors.password?.message}
+        {...register('password', { required: 'Password is required' })}
+      />
+      {login.isError && <Alert severity="error">{login.error.message}</Alert>}
+      <Button type="submit" variant="contained" disabled={login.isPending}>
         {login.isPending ? 'Logging in...' : 'Log in'}
-      </button>
-      <p>
-        No account? <Link to="/register">Register</Link>
-      </p>
-    </form>
+      </Button>
+      <Typography variant="body2">
+        No account? <Link component={RouterLink} to="/register">Register</Link>
+      </Typography>
+    </Box>
   );
 }
