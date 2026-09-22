@@ -3,6 +3,7 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { Box, TextField, Button, Typography, Alert, Link } from '@mui/material';
 import type { AuthCredentials } from '@fluxboard/shared';
 import { useLogin } from '../features/auth/useAuth';
+import { authFormSx } from '../features/auth/authFormStyles';
 
 export function LoginPage() {
   const { register, handleSubmit, formState: { errors } } = useForm<AuthCredentials>();
@@ -17,7 +18,7 @@ export function LoginPage() {
     <Box
       component="form"
       onSubmit={onSubmit}
-      sx={{ display: 'flex', flexDirection: 'column', gap: 2, maxWidth: 360, mx: 'auto', mt: 8 }}
+      sx={authFormSx}
     >
       <Typography variant="h4" component="h1">
         Log in
