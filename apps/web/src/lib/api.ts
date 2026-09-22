@@ -1,40 +1,26 @@
+import axios, { AxiosError } from 'axios';
+import type { AuthCredentials, AuthUser } from '@fluxboard/shared';
+
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
 
-export type ApiUser = {
-  id: string;
-  email: string;
-};
+const apiClient = axios.create({
+  baseURL: API_URL,
+  withCredentials: true,
+});
 
-async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_URL}${path}`, {
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
-    ...options,
-  });
-
-  if (!res.ok) {
-    const body = await res.json().catch(() => null);
-    throw new Error(body?.error ?? `Request failed with ${res.status}`);
-  }
-
-  if (res.status === 204) {
-    return undefined as T;
-  }
-
-  return res.json();
-}
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error: AxiosError<{ error?: string }>) => {
+    const message = error.response?.data?.error ?? error.message;
+    return Promise.reject(new Error(message));
+  },
+);
 
 export const api = {
-  register: (email: string, password: string) =>
-    apiFetch<{ user: ApiUser }>('/auth/register', {
-      method: 'POST',
-      body: JSON.stringify({ email, password }),
-    }),
-  login: (email: string, password: string) =>
-    apiFetch<{ user: ApiUser }>('/auth/login', {
-      method: 'POST',
-      body: JSON.stringify({ email, password }),
-    }),
-  logout: () => apiFetch<void>('/auth/logout', { method: 'POST' }),
-  me: () => apiFetch<{ user: ApiUser }>('/auth/me'),
+  register: (credentials: AuthCredentials) =>
+    apiClient.post<{ user: AuthUser }>('/auth/register', credentials).then((res) => res.data),
+  login: (credentials: AuthCredentials) =>
+    apiClient.post<{ user: AuthUser }>('/auth/login', credentials).then((res) => res.data),
+  logout: () => apiClient.post('/auth/logout').then(() => undefined),
+  me: () => apiClient.get<{ user: AuthUser }>('/auth/me').then((res) => res.data),
 };
