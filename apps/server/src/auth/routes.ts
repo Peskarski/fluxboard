@@ -6,13 +6,14 @@ import { db } from '../db/client.js';
 import { users } from '../db/schema.js';
 import { hashPassword, verifyPassword } from './password.js';
 import { signJwt } from './jwt.js';
+import { requireAuth } from './middleware.js';
+import { AUTH_COOKIE_NAME } from './constants.js';
 
 const credentialsSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
 });
 
-export const AUTH_COOKIE_NAME = 'fluxboard_token';
 const COOKIE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
 
 function setAuthCookie(res: Response, token: string): void {
@@ -75,4 +76,22 @@ authRouter.post('/login', async (req, res) => {
   const token = signJwt({ userId: user.id });
   setAuthCookie(res, token);
   res.json({ user: { id: user.id, email: user.email } });
+});
+
+authRouter.post('/logout', (_req, res) => {
+  res.clearCookie(AUTH_COOKIE_NAME);
+  res.status(204).send();
+});
+
+authRouter.get('/me', requireAuth, async (req, res) => {
+  const [user] = await db
+    .select({ id: users.id, email: users.email })
+    .from(users)
+    .where(eq(users.id, req.userId!));
+
+  if (!user) {
+    res.status(404).json({ error: 'User not found' });
+    return;
+  }
+  res.json({ user });
 });
