@@ -1,1 +1,9 @@
-export const SHARED_PACKAGE_PLACEHOLDER = true;
+export type AuthCredentials = {
+  email: string;
+  password: string;
+};
+
+export type AuthUser = {
+  id: string;
+  email: string;
+};
