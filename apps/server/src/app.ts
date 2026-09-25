@@ -2,6 +2,7 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import { authRouter } from './auth/routes.js';
+import { boardsRouter } from './boards/routes.js';
 
 export const app = express();
 
@@ -19,3 +20,4 @@ app.get('/health', (_req, res) => {
 });
 
 app.use('/auth', authRouter);
+app.use('/boards', boardsRouter);

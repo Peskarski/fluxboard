@@ -7,3 +7,12 @@ export const users = pgTable('users', {
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 
+export const boards = pgTable('boards', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  name: text('name').notNull(),
+  ownerId: uuid('owner_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
